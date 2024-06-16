@@ -1,0 +1,79 @@
+unit Unit1;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
+
+type
+  TNayewilu = class(TForm)
+    addBtn: TButton;
+    rightBtn: TButton;
+    leftBtn: TButton;
+    appLabel: TLabel;
+    openBtn: TButton;
+    searchBox: TEdit;
+    searchBtn: TButton;
+    imageBox: TImage;
+    procedure FormCreate(Sender: TObject);
+    procedure rightBtnClick(Sender: TObject);
+    procedure leftBtnClick(Sender: TObject);
+  private
+    { Private declarations }
+    currentIndex, maxIndex : integer;
+  public
+    { Public declarations }
+  end;
+
+var
+  Nayewilu: TNayewilu;
+
+implementation
+
+{$R *.dfm}
+
+procedure readApplicationList;
+begin
+
+end;
+
+procedure showApplication(index : integer);
+begin
+
+end;
+
+procedure TNayewilu.FormCreate(Sender: TObject);
+begin
+
+  readApplicationList;
+
+  showApplication(0);
+
+
+end;
+
+procedure TNayewilu.leftBtnClick(Sender: TObject);
+begin
+
+  if currentIndex > 0 then
+  begin
+    currentIndex := currentIndex - 1;
+    showApplication(currentIndex);
+  end;
+
+end;
+
+procedure TNayewilu.rightBtnClick(Sender: TObject);
+begin
+
+  if currentIndex < maxIndex then
+  begin
+    currentIndex := currentIndex + 1;
+    showApplication(currentIndex);
+  end;
+  
+  
+end;
+
+end.
