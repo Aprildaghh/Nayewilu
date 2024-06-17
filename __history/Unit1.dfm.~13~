@@ -3,8 +3,8 @@ object Nayewilu: TNayewilu
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Nayewilu'
-  ClientHeight = 324
-  ClientWidth = 593
+  ClientHeight = 323
+  ClientWidth = 625
   Color = clBtnHighlight
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,24 +12,23 @@ object Nayewilu: TNayewilu
   Font.Name = 'Segoe UI'
   Font.Style = []
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   TextHeight = 15
   object appLabel: TLabel
-    Left = 171
+    Left = 288
     Top = 184
     Width = 32
     Height = 15
     Caption = 'Name'
   end
   object imageBox: TImage
-    Left = 136
-    Top = 43
+    Left = 256
+    Top = 48
     Width = 105
     Height = 105
   end
   object rightBtn: TButton
-    Left = 282
-    Top = 88
+    Left = 579
+    Top = 96
     Width = 49
     Height = 25
     Cursor = crHandPoint
@@ -38,8 +37,8 @@ object Nayewilu: TNayewilu
     OnClick = rightBtnClick
   end
   object leftBtn: TButton
-    Left = 48
-    Top = 88
+    Left = 8
+    Top = 96
     Width = 49
     Height = 25
     Cursor = crHandPoint
@@ -48,7 +47,7 @@ object Nayewilu: TNayewilu
     OnClick = leftBtnClick
   end
   object openBtn: TButton
-    Left = 330
+    Left = 282
     Top = 251
     Width = 105
     Height = 49
@@ -64,7 +63,7 @@ object Nayewilu: TNayewilu
     TabOrder = 3
   end
   object searchBtn: TButton
-    Left = 203
+    Left = 171
     Top = 251
     Width = 105
     Height = 49
@@ -74,8 +73,8 @@ object Nayewilu: TNayewilu
     OnClick = searchBtnClick
   end
   object addAppBtn: TButton
-    Left = 449
-    Top = 24
+    Left = 393
+    Top = 251
     Width = 105
     Height = 49
     Caption = 'Add Application'
@@ -83,21 +82,11 @@ object Nayewilu: TNayewilu
     OnClick = addAPpBtnClick
   end
   object addDirBtn: TButton
-    Left = 449
-    Top = 99
+    Left = 504
+    Top = 251
     Width = 105
     Height = 49
     Caption = 'Add Directory'
     TabOrder = 6
-    OnClick = addDirBtnClick
-  end
-  object removeBtn: TButton
-    Left = 449
-    Top = 168
-    Width = 105
-    Height = 49
-    Caption = 'Remove'
-    TabOrder = 7
-    OnClick = removeBtnClick
   end
 end

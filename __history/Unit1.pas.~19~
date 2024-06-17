@@ -3,12 +3,11 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  FileCtrl, System.IOUtils, ShellAPI, Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
 
 type
   TNayewilu = class(TForm)
-    addBtn: TButton;
     rightBtn: TButton;
     leftBtn: TButton;
     appLabel: TLabel;
@@ -16,10 +15,14 @@ type
     searchBox: TEdit;
     searchBtn: TButton;
     imageBox: TImage;
+    addAppBtn: TButton;
+    addDirBtn: TButton;
     procedure FormCreate(Sender: TObject);
     procedure rightBtnClick(Sender: TObject);
     procedure leftBtnClick(Sender: TObject);
     procedure searchBtnClick(Sender: TObject);
+    procedure addAppBtnClick(Sender: TObject);
+    procedure addDirBtnClick(Sender: TObject);
   private
     { Private declarations }
     
@@ -35,11 +38,8 @@ var
 implementation
 
 {$R *.dfm}
-
-procedure addApplication(newApp : string);
-begin
-
-end;
+// function to open app or dir
+// ShellExecute(Application.Handle, PChar('open'), PChar('explorer.exe'), PChar('/select'), nil, SW_SHOWNORMAL);
 
 procedure readApplicationList;
 begin
@@ -49,6 +49,56 @@ end;
 procedure showApplication(index : integer = 0);
 begin
   currentIndex := index;
+end;
+
+procedure TNayewilu.addAppBtnClick(Sender: TObject);
+var
+  selectedFile: string;
+  dlg: TOpenDialog;
+begin
+  selectedFile := '';
+  dlg := TOpenDialog.Create(nil);
+  try
+    dlg.InitialDir := 'C:\';
+    dlg.Filter := 'All files (*.*)|*.*|*';
+    if dlg.Execute(Handle) then
+      selectedFile := dlg.FileName;
+  finally
+    dlg.Free;
+  end;
+
+  if selectedFile <> '' then
+  begin
+  searchBox.Text := selectedFile;
+    allApplicationArray[maxIndex] := selectedFile;
+    maxIndex := maxIndex +1;
+  end;
+
+end;
+
+procedure TNayewilu.addDirBtnClick(Sender: TObject);
+var
+  selectedFile: string;
+  dlg: TFileOpenDialog;
+begin
+  selectedFile := '';
+  dlg := TFileOpenDialog.Create(nil);
+  try
+    dlg.Title := 'C:\';
+    dlg.Options := [fdoPickFolders, fdoPathMustExist, fdoForceFileSystem];
+    if dlg.Execute then
+      selectedFile := dlg.FileName;
+  finally
+    dlg.Free;
+  end;
+
+  if selectedFile <> '' then
+  begin
+    allApplicationArray[maxIndex] := selectedFile;
+    maxIndex := maxIndex +1;
+  end;
+
+
 end;
 
 procedure TNayewilu.FormCreate(Sender: TObject);

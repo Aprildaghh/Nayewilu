@@ -3,8 +3,8 @@ object Nayewilu: TNayewilu
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Nayewilu'
-  ClientHeight = 335
-  ClientWidth = 636
+  ClientHeight = 324
+  ClientWidth = 629
   Color = clBtnHighlight
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,16 +26,17 @@ object Nayewilu: TNayewilu
     Width = 105
     Height = 105
   end
-  object addBtn: TButton
-    Left = 489
+  object addAppBtn: TButton
+    Left = 393
     Top = 251
     Width = 105
     Height = 49
     Cursor = crHandPoint
     BiDiMode = bdLeftToRight
-    Caption = 'Add'
+    Caption = 'Add Application'
     ParentBiDiMode = False
     TabOrder = 0
+    OnClick = addAppBtnClick
   end
   object rightBtn: TButton
     Left = 579
@@ -58,7 +59,7 @@ object Nayewilu: TNayewilu
     OnClick = leftBtnClick
   end
   object openBtn: TButton
-    Left = 329
+    Left = 282
     Top = 251
     Width = 105
     Height = 49
@@ -69,17 +70,30 @@ object Nayewilu: TNayewilu
   object searchBox: TEdit
     Left = 24
     Top = 264
-    Width = 121
+    Width = 141
     Height = 23
     TabOrder = 4
   end
   object searchBtn: TButton
-    Left = 169
+    Left = 171
     Top = 251
     Width = 105
     Height = 49
     Cursor = crHandPoint
     Caption = 'Search'
     TabOrder = 5
+    OnClick = searchBtnClick
+  end
+  object addDirBtn: TButton
+    Left = 504
+    Top = 251
+    Width = 105
+    Height = 49
+    Cursor = crHandPoint
+    BiDiMode = bdLeftToRight
+    Caption = 'Add Directory'
+    ParentBiDiMode = False
+    TabOrder = 6
+    OnClick = addAppBtnClick
   end
 end
