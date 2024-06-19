@@ -4,7 +4,8 @@ interface
 
 uses
   FileCtrl, System.IOUtils, ShellAPI, Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Vcl.Imaging.jpeg;
 
 type
   TNayewilu = class(TForm)
@@ -26,9 +27,9 @@ type
     procedure addDirBtnClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure removeBtnClick(Sender: TObject);
+    procedure openBtnClick(Sender: TObject);
   private
     { Private declarations }
-    
   public
     { Public declarations }
   end;
@@ -42,20 +43,19 @@ var
 implementation
 
 {$R *.dfm}
-// function to open app or dir
-// ShellExecute(Application.Handle, PChar('open'), PChar('explorer.exe'), PChar('/select'), nil, SW_SHOWNORMAL);
 
 procedure readApplicationList;
 var
   i : integer;
   line: string;
-  inputFile : File;
+  inputFile : textFile;
 begin
 
   if FileExists(textFilePath) then
   begin
     i := 0;
     AssignFile(inputFile, textFilePath);
+    Reset(inputFile);
     while not Eof(inputFile) do
     begin
       Readln(inputFile, line);
@@ -75,14 +75,61 @@ begin
 
 end;
 
-procedure showApplication(index : integer = 0);
+function getName() : string;
+var
+  theResult, theStr : string;
+  i : integer;
 begin
-  currentIndex := index;
+  theStr :=  currentApplicationArray[currentIndex];
+
+  for i := 1 to Length(theStr) do
+  begin
+    if theStr[i] = '\' then
+    begin
+      theResult := '';
+      Continue;
+    end;
+    theResult := theResult + theStr[i];
+  end;
+
+  Result := theResult;
 end;
 
-procedure removeApplication(index : integer ; arr : array of string);
+procedure showApplication( var myLabel : TLabel ; var image : TImage ; index : integer = 0);
+var
+ icon : string;
 begin
+  currentIndex := index;
 
+  myLabel.Caption := getName();
+
+
+
+end;
+
+procedure removeApplication();
+var
+  i: Integer;
+  found : Boolean;
+begin
+  for i := currentIndex+1 to Length(currentApplicationArray)-1 do
+  begin
+    currentApplicationArray[i-1] := currentApplicationArray[i];
+  end;
+
+  found := False;
+
+  for i := 0 to Length(allApplicationArray)-1 do
+  begin
+
+    if found then
+    begin
+      allApplicationArray[i-1] := allApplicationArray[i];
+    end;
+
+    if currentApplicationArray[i] = allApplicationArray[i] then
+      found := True;
+  end;
 end;
 
 procedure TNayewilu.addAppBtnClick(Sender: TObject);
@@ -103,9 +150,9 @@ begin
 
   if selectedFile <> '' then
   begin
+    maxIndex := maxIndex +1;
     allApplicationArray[maxIndex] := selectedFile;
     currentApplicationArray[maxIndex] := selectedFile;
-    maxIndex := maxIndex +1;
   end;
 
 end;
@@ -128,9 +175,9 @@ begin
 
   if selectedFile <> '' then
   begin
+    maxIndex := maxIndex +1;
     allApplicationArray[maxIndex] := selectedFile;
     currentApplicationArray[maxIndex] := selectedFile;
-    maxIndex := maxIndex +1;
   end;
 
 
@@ -138,16 +185,26 @@ end;
 
 procedure TNayewilu.FormCreate(Sender: TObject);
 begin
-
   readApplicationList;
 
-  showApplication;
-
+  showApplication(appLabel, imageBox);
 end;
 
 procedure TNayewilu.FormDestroy(Sender: TObject);
+var
+  myFile : textFile;
+  i: Integer;
 begin
-  // save all application and directories to a text file under C:/nayewilu.txt
+  AssignFile(myFile, textFilePath);
+  ReWrite(myFile);
+
+  for i := 0 to Length(allApplicationArray)-1 do
+  begin
+    if allApplicationArray[i] <> '' then
+      writeLn(myFile, allApplicationArray[i]);
+  end;
+
+  CloseFile(myFile);
 end;
 
 procedure TNayewilu.leftBtnClick(Sender: TObject);
@@ -155,18 +212,22 @@ begin
 
   if currentIndex > 0 then
   begin
-    showApplication(currentIndex-1);
+    showApplication(appLabel, imageBox, currentIndex-1);
   end;
 
 end;
 
+procedure TNayewilu.openBtnClick(Sender: TObject);
+begin
+  ShellExecute(0, 'open', PWideChar(currentApplicationArray[currentIndex]), nil, nil, SW_SHOW);
+end;
+
 procedure TNayewilu.removeBtnClick(Sender: TObject);
 begin
-  removeApplication(currentIndex, currentApplicationArray);
-  removeApplication(currentIndex, allApplicationArray);
+  removeApplication();
   currentIndex := currentIndex -1;
   maxIndex := maxIndex -1;
-  showApplication(currentIndex);
+  showApplication(appLabel, imageBox, currentIndex);
 end;
 
 procedure TNayewilu.rightBtnClick(Sender: TObject);
@@ -174,7 +235,7 @@ begin
 
   if currentIndex < maxIndex then
   begin
-    showApplication(currentIndex+1);
+    showApplication(appLabel, imageBox, currentIndex+1);
   end;
   
   
@@ -213,7 +274,7 @@ begin
     maxIndex := Length(currentApplicationArray)-1;
   end;
 
-  showApplication;
+  showApplication(appLabel, imageBox);
 
 end;
 
