@@ -38,7 +38,7 @@ var
   Nayewilu: TNayewilu;
   currentIndex, maxIndex : integer;
   allApplicationArray, currentApplicationArray : array[0 .. 150] of string;
-  textFilePath : string = 'C:/nayewilu.txt';
+  textFilePath : string = 'nayewilu.txt';
 
 implementation
 
@@ -75,12 +75,12 @@ begin
 
 end;
 
-function getName() : string;
+function getName(index : Integer ; arr : array of string) : string;
 var
   theResult, theStr : string;
   i : integer;
 begin
-  theStr :=  currentApplicationArray[currentIndex];
+  theStr :=  arr[index];
 
   for i := 1 to Length(theStr) do
   begin
@@ -96,14 +96,10 @@ begin
 end;
 
 procedure showApplication( var myLabel : TLabel ; var image : TImage ; index : integer = 0);
-var
- icon : string;
 begin
   currentIndex := index;
 
-  myLabel.Caption := getName();
-
-
+  myLabel.Caption := getName(currentIndex, currentApplicationArray);
 
 end;
 
@@ -196,6 +192,7 @@ var
   i: Integer;
 begin
   AssignFile(myFile, textFilePath);
+
   ReWrite(myFile);
 
   for i := 0 to Length(allApplicationArray)-1 do
@@ -237,22 +234,31 @@ begin
   begin
     showApplication(appLabel, imageBox, currentIndex+1);
   end;
-  
-  
+
 end;
 
 procedure TNayewilu.searchBtnClick(Sender: TObject);
 var
-  inputText : string;
-  i, newIndex, memoArrayLength: Integer;
-  memo : array of string;
+  inputText, appName : string;
+  i, newIndex: Integer;
 begin
   inputText := searchBox.Text;
 
   if CompareText(inputText, '') = 0 then
   begin
+    newIndex := 0;
+
     for i := 0 to Length(allApplicationArray)-1 do
-      currentApplicationArray[i] := allApplicationArray[i];
+    begin
+      if allApplicationArray[i] <> '' then
+      begin
+        currentApplicationArray[i] := allApplicationArray[i];
+        newIndex := newIndex + 1;
+      end;
+    end;
+
+    maxIndex := newIndex-1;
+
   end
   else
   begin
@@ -263,15 +269,15 @@ begin
   
     for i := 0 to Length(allApplicationArray)-1 do
     begin
-      memoArrayLength := ExtractStrings(['/', '\'], [' '], PWideChar(allApplicationArray[i]), TStrings(memo));
-      if Pos(inputText, memo[memoArrayLength - 1]) > 0 then
+      appName := getName(i, allApplicationArray);
+      if Pos(inputText, appName) > 0 then
       begin
         currentApplicationArray[newIndex] := allApplicationArray[i];
         newIndex := newIndex + 1;
       end;
-    
+
     end;
-    maxIndex := Length(currentApplicationArray)-1;
+    maxIndex := newIndex-1;
   end;
 
   showApplication(appLabel, imageBox);
