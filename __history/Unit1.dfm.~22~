@@ -1,0 +1,99 @@
+object Nayewilu: TNayewilu
+  Left = 150
+  Top = 100
+  BorderStyle = bsToolWindow
+  Caption = 'Nayewilu'
+  ClientHeight = 487
+  ClientWidth = 990
+  Color = clBtnHighlight
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Position = poDesigned
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  TextHeight = 15
+  object appLabel: TLabel
+    Left = 32
+    Top = 400
+    Width = 32
+    Height = 15
+    Caption = 'Name'
+  end
+  object rightBtn: TButton
+    Left = 410
+    Top = 440
+    Width = 49
+    Height = 23
+    Cursor = crHandPoint
+    Caption = '>'
+    TabOrder = 0
+    OnClick = rightBtnClick
+  end
+  object leftBtn: TButton
+    Left = 320
+    Top = 440
+    Width = 49
+    Height = 23
+    Cursor = crHandPoint
+    Caption = '<'
+    TabOrder = 1
+    OnClick = leftBtnClick
+  end
+  object openBtn: TButton
+    Left = 514
+    Top = 440
+    Width = 89
+    Height = 23
+    Cursor = crHandPoint
+    Caption = 'Open'
+    TabOrder = 2
+    OnClick = openBtnClick
+  end
+  object searchBox: TEdit
+    Left = 113
+    Top = 440
+    Width = 141
+    Height = 23
+    TabOrder = 3
+  end
+  object searchBtn: TButton
+    Left = 18
+    Top = 440
+    Width = 89
+    Height = 23
+    Cursor = crHandPoint
+    Caption = 'Search'
+    TabOrder = 4
+    OnClick = searchBtnClick
+  end
+  object addAppBtn: TButton
+    Left = 754
+    Top = 440
+    Width = 89
+    Height = 23
+    Caption = 'Add Application'
+    TabOrder = 5
+    OnClick = addAPpBtnClick
+  end
+  object addDirBtn: TButton
+    Left = 874
+    Top = 440
+    Width = 89
+    Height = 23
+    Caption = 'Add Directory'
+    TabOrder = 6
+    OnClick = addDirBtnClick
+  end
+  object removeBtn: TButton
+    Left = 634
+    Top = 440
+    Width = 89
+    Height = 23
+    Caption = 'Remove'
+    TabOrder = 7
+    OnClick = removeBtnClick
+  end
+end

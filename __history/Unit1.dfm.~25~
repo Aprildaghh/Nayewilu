@@ -1,0 +1,71 @@
+object Nayewilu: TNayewilu
+  Left = 150
+  Top = 100
+  BorderStyle = bsToolWindow
+  Caption = 'Nayewilu'
+  ClientHeight = 345
+  ClientWidth = 705
+  Color = clBtnHighlight
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  Position = poDesigned
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  TextHeight = 15
+  object openBtn: TButton
+    Left = 441
+    Top = 152
+    Width = 89
+    Height = 23
+    Cursor = crHandPoint
+    Caption = 'Open'
+    TabOrder = 0
+    OnClick = openBtnClick
+  end
+  object searchBox: TEdit
+    Left = 441
+    Top = 80
+    Width = 218
+    Height = 23
+    TabOrder = 1
+    OnKeyUp = searchBoxKeyUp
+  end
+  object addAppBtn: TButton
+    Left = 441
+    Top = 224
+    Width = 89
+    Height = 23
+    Caption = 'Add Application'
+    TabOrder = 2
+    OnClick = addAPpBtnClick
+  end
+  object addDirBtn: TButton
+    Left = 570
+    Top = 224
+    Width = 89
+    Height = 23
+    Caption = 'Add Directory'
+    TabOrder = 3
+    OnClick = addDirBtnClick
+  end
+  object removeBtn: TButton
+    Left = 570
+    Top = 152
+    Width = 89
+    Height = 23
+    Caption = 'Remove'
+    TabOrder = 4
+    OnClick = removeBtnClick
+  end
+  object ListBox1: TListBox
+    Left = 32
+    Top = 40
+    Width = 353
+    Height = 273
+    ItemHeight = 15
+    TabOrder = 5
+  end
+end

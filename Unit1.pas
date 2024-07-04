@@ -3,129 +3,122 @@ unit Unit1;
 interface
 
 uses
-  FileCtrl, System.IOUtils, ShellAPI, Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  Vcl.Imaging.jpeg;
+  FileCtrl, System.IOUtils, ShellAPI, Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Vcl.Imaging.jpeg, System.Generics.Collections;
 
 type
   TNayewilu = class(TForm)
-    rightBtn: TButton;
-    leftBtn: TButton;
-    appLabel: TLabel;
     openBtn: TButton;
     searchBox: TEdit;
-    searchBtn: TButton;
-    imageBox: TImage;
     addAppBtn: TButton;
     addDirBtn: TButton;
     removeBtn: TButton;
+    listBox: TListBox;
+    Label1: TLabel;
     procedure FormCreate(Sender: TObject);
-    procedure rightBtnClick(Sender: TObject);
-    procedure leftBtnClick(Sender: TObject);
-    procedure searchBtnClick(Sender: TObject);
     procedure addAppBtnClick(Sender: TObject);
     procedure addDirBtnClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure removeBtnClick(Sender: TObject);
     procedure openBtnClick(Sender: TObject);
+    procedure searchBoxKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
   private
     { Private declarations }
   public
     { Public declarations }
   end;
 
+  TApplication = class
+    name, path: string;
+    constructor Create(tName, tPath: string);
+  end;
+
 var
-  Nayewilu: TNayewilu;
-  currentIndex, maxIndex : integer;
-  allApplicationArray, currentApplicationArray : array[0 .. 150] of string;
-  textFilePath : string = 'nayewilu.txt';
+  Nayewilu        : TNayewilu;
+  allApplications : TList<TApplication>;
+  filter          : string;
+  textFilePath    : string;
 
 implementation
 
 {$R *.dfm}
 
+constructor TApplication.Create(tName: string; tPath: string);
+begin
+  self.name := tName;
+  self.path := tPath;
+end;
+
+function getName(path: string) : string;
+var
+  theResult : string;
+  i : integer;
+begin
+
+  for i := 1 to Length(path) do
+  begin
+    if path[i] = '\' then
+    begin
+      theResult := '';
+      Continue;
+    end;
+    theResult := theResult + path[i];
+  end;
+
+  Result := theResult;
+end;
+
+function getSelectedApp: TApplication;
+var
+  i: Integer;
+begin
+  for i := 0 to Nayewilu.listBox.Count - 1 do
+    if Nayewilu.listBox.Selected[i] then
+    begin
+      Result := allApplications.Items[i];
+      Exit;
+    end;
+  Result := nil;
+
+end;
+
+function updateList: boolean;
+var
+  i: Integer;
+begin
+  filter := Nayewilu.searchBox.Text;
+  Nayewilu.listBox.Clear;
+  if filter = '' then
+  begin
+    for i := 0 to allApplications.Count - 1 do
+      Nayewilu.listBox.AddItem(allApplications.Items[i].name, nil);
+    Exit;
+  end;
+  for i := 0 to allApplications.Count - 1 do
+    if allApplications.Items[i].name.ToLower.Contains(filter.ToLower) then Nayewilu.listBox.AddItem(allApplications.Items[i].name, nil);
+
+end;
+
 procedure readApplicationList;
 var
-  i : integer;
   line: string;
   inputFile : textFile;
 begin
 
   if FileExists(textFilePath) then
   begin
-    i := 0;
     AssignFile(inputFile, textFilePath);
     Reset(inputFile);
     while not Eof(inputFile) do
     begin
       Readln(inputFile, line);
-      allApplicationArray[i] := line;
-      currentApplicationArray[i] := line;
-      i := i+1;
+      allApplications.Add(TApplication.Create(getName(line), line));
     end;
-    maxIndex := i - 1;
     CloseFile(inputFile);
   end
-  else
-  begin
-    maxIndex := -1;
-    currentIndex := -1;
-  end;
 
-
-end;
-
-function getName(index : Integer ; arr : array of string) : string;
-var
-  theResult, theStr : string;
-  i : integer;
-begin
-  theStr :=  arr[index];
-
-  for i := 1 to Length(theStr) do
-  begin
-    if theStr[i] = '\' then
-    begin
-      theResult := '';
-      Continue;
-    end;
-    theResult := theResult + theStr[i];
-  end;
-
-  Result := theResult;
-end;
-
-procedure showApplication( var myLabel : TLabel ; var image : TImage ; index : integer = 0);
-begin
-  currentIndex := index;
-
-  myLabel.Caption := getName(currentIndex, currentApplicationArray);
-
-end;
-
-procedure removeApplication();
-var
-  i: Integer;
-  found : Boolean;
-begin
-  for i := currentIndex+1 to Length(currentApplicationArray)-1 do
-  begin
-    currentApplicationArray[i-1] := currentApplicationArray[i];
-  end;
-
-  found := False;
-
-  for i := 0 to Length(allApplicationArray)-1 do
-  begin
-
-    if found then
-    begin
-      allApplicationArray[i-1] := allApplicationArray[i];
-    end;
-
-    if currentApplicationArray[i] = allApplicationArray[i] then
-      found := True;
-  end;
 end;
 
 procedure TNayewilu.addAppBtnClick(Sender: TObject);
@@ -145,12 +138,9 @@ begin
   end;
 
   if selectedFile <> '' then
-  begin
-    maxIndex := maxIndex +1;
-    allApplicationArray[maxIndex] := selectedFile;
-    currentApplicationArray[maxIndex] := selectedFile;
-  end;
+    allApplications.add(TApplication.Create(getName(selectedFile), selectedFile));
 
+  updateList;
 end;
 
 procedure TNayewilu.addDirBtnClick(Sender: TObject);
@@ -170,20 +160,27 @@ begin
   end;
 
   if selectedFile <> '' then
-  begin
-    maxIndex := maxIndex +1;
-    allApplicationArray[maxIndex] := selectedFile;
-    currentApplicationArray[maxIndex] := selectedFile;
-  end;
+    allApplications.add(TApplication.Create(getName(selectedFile), selectedFile));
 
-
+  updateList;
 end;
 
 procedure TNayewilu.FormCreate(Sender: TObject);
 begin
+
+  textFilePath := GetEnvironmentVariable('appdata') + '\nayewilu';
+
+  try
+    mkdir(textFilePath);
+  except
+  end;
+
+  textFilePath := textFilePath + '\nayewilu.txt';
+
+  allApplications := TList<TApplication>.Create;
   readApplicationList;
 
-  showApplication(appLabel, imageBox);
+  updateList;
 end;
 
 procedure TNayewilu.FormDestroy(Sender: TObject);
@@ -195,93 +192,38 @@ begin
 
   ReWrite(myFile);
 
-  for i := 0 to Length(allApplicationArray)-1 do
-  begin
-    if allApplicationArray[i] <> '' then
-      writeLn(myFile, allApplicationArray[i]);
-  end;
+  for i := 0 to allApplications.Count-1 do
+    if allApplications.Items[i].path <> '' then
+      writeLn(myFile, allApplications.Items[i].path);
 
   CloseFile(myFile);
 end;
 
-procedure TNayewilu.leftBtnClick(Sender: TObject);
-begin
-
-  if currentIndex > 0 then
-  begin
-    showApplication(appLabel, imageBox, currentIndex-1);
-  end;
-
-end;
-
 procedure TNayewilu.openBtnClick(Sender: TObject);
+var
+  theApp: TApplication;
 begin
-  ShellExecute(0, 'open', PWideChar(currentApplicationArray[currentIndex]), nil, nil, SW_SHOW);
+  theApp := getSelectedApp;
+
+  if theApp <> nil then
+    ShellExecute(0, 'open', PWideChar(theApp.path), nil, nil, SW_SHOW);
 end;
 
 procedure TNayewilu.removeBtnClick(Sender: TObject);
-begin
-  removeApplication();
-  currentIndex := currentIndex -1;
-  maxIndex := maxIndex -1;
-  showApplication(appLabel, imageBox, currentIndex);
-end;
-
-procedure TNayewilu.rightBtnClick(Sender: TObject);
-begin
-
-  if currentIndex < maxIndex then
-  begin
-    showApplication(appLabel, imageBox, currentIndex+1);
-  end;
-
-end;
-
-procedure TNayewilu.searchBtnClick(Sender: TObject);
 var
-  inputText, appName : string;
-  i, newIndex: Integer;
+  deletedApp: TApplication;
 begin
-  inputText := searchBox.Text;
+  deletedApp := getSelectedApp;
+  allApplications.Remove(deletedApp);
+  deletedApp.Free;
+  Nayewilu.listBox.DeleteSelected;
+end;
 
-  if CompareText(inputText, '') = 0 then
-  begin
-    newIndex := 0;
-
-    for i := 0 to Length(allApplicationArray)-1 do
-    begin
-      if allApplicationArray[i] <> '' then
-      begin
-        currentApplicationArray[i] := allApplicationArray[i];
-        newIndex := newIndex + 1;
-      end;
-    end;
-
-    maxIndex := newIndex-1;
-
-  end
-  else
-  begin
-    for i := 0 to Length(allApplicationArray)-1 do
-      currentApplicationArray[i] := '';
-
-    newIndex := 0;
-  
-    for i := 0 to Length(allApplicationArray)-1 do
-    begin
-      appName := getName(i, allApplicationArray);
-      if Pos(inputText, appName) > 0 then
-      begin
-        currentApplicationArray[newIndex] := allApplicationArray[i];
-        newIndex := newIndex + 1;
-      end;
-
-    end;
-    maxIndex := newIndex-1;
-  end;
-
-  showApplication(appLabel, imageBox);
-
+procedure TNayewilu.searchBoxKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  updateList;
 end;
 
 end.
+// make the text file save in appdata/roaming
